@@ -1,0 +1,33 @@
+{
+  "name": "@repo/shared",
+  "version": "0.0.0",
+  "private": false,
+  "license": "MIT",
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc"
+  },
+  "files": [
+    "./dist/**"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./api-client": {
+      "import": "./dist/api-client/index.js",
+      "require": "./dist/api-client/index.js"
+    },
+    "./types": {
+      "import": "./dist/types/index.js",
+      "require": "./dist/types/index.js"
+    },
+    "./utils": {
+      "import": "./dist/utils/index.js",
+      "require": "./dist/utils/index.js"
+    }
+  }
+}

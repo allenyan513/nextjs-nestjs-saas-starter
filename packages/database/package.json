@@ -1,0 +1,14 @@
+{
+  "name": "@repo/database",
+  "version": "0.0.0",
+  "scripts": {
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "format": "prisma format",
+    "lint": "eslint . --max-warnings 0"
+  },
+  "export": {
+    ".": "./src/index.ts"
+  }
+}

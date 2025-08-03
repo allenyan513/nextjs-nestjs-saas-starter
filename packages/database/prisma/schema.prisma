@@ -1,0 +1,94 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+  output        = "../generated/client"
+}
+
+enum SubscriptionTier {
+  free
+  pro
+}
+
+enum OrderStatus {
+  pending
+  completed
+}
+
+enum PaymentStatus {
+  pending
+  paid
+  unpaid
+  no_payment_required
+}
+
+model User {
+  id               String           @id @default(uuid())
+  email            String           @unique
+  name             String?
+  avatarUrl        String?
+  bio              String?
+  website          String?
+  twitter          String?
+  github           String?
+  linkedin         String?
+  facebook         String?
+  instagram        String?
+  youtube          String?
+  tiktok           String?
+  pinterest        String?
+  subscriptionTier SubscriptionTier @default(free)
+  balance          Decimal          @default(0.00) @db.Decimal(10, 2)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  accounts         Account[]
+  orders           Order[]
+}
+
+model Account {
+  id                String   @id @default(uuid())
+  provider          String
+  providerAccountId String
+  userId            String
+  accessToken       String?
+  refreshToken      String?
+  expiresIn         Int?
+  tokenType         String?
+  scope             String?
+  idToken           String?
+  sessionState      String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Order {
+  id            String        @id @default(uuid())
+  sessionId     String        @unique
+  userId        String
+  productId     String        @default("")
+  product       Json          @default("{}")
+  priceId       String        @default("")
+  price         Json          @default("{}")
+  paymentStatus PaymentStatus @default(pending)
+  orderStatus   OrderStatus   @default(pending)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  user          User          @relation(fields: [userId], references: [id])
+}
+
+model PaymentEvent {
+  id        String @id @default(uuid())
+  evnetId   String @unique
+  eventType String
+  data      Json
+}

@@ -1,0 +1,46 @@
+'use client';
+
+import * as React from 'react';
+import { type Icon } from '@tabler/icons-react';
+
+import {
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from '@repo/ui/sidebar';
+
+export function NavSecondary({
+  items,
+  ...props
+}: {
+  items: {
+    title: string;
+    url: string;
+    icon: Icon;
+    external?: boolean;
+  }[];
+} & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
+  return (
+    <SidebarGroup {...props}>
+      <SidebarGroupContent>
+        <SidebarMenu>
+          {items.map((item: any) => (
+            <SidebarMenuItem key={item.title}>
+              <SidebarMenuButton asChild>
+                <a
+                  target={item.external ? '_blank' : undefined}
+                  href={item.url}
+                >
+                  <item.icon />
+                  <span>{item.title}</span>
+                </a>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
+  );
+}

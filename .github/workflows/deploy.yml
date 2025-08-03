@@ -1,0 +1,83 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      ZIP_NAME: app.zip
+      REMOTE_PATH: /home/ec2-user/reviewsup.io
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.9.0'
+#          cache: 'pnpm'
+
+      - name: Directly install pnpm
+        run: |
+            npm install -g pnpm@latest
+            pnpm --version
+
+      - name: Install dependencies (pnpm)
+        run: pnpm install --frozen-lockfile
+
+      - name: Decrypt .env.production.gpg file
+        run: |
+          gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.GPG_PASSPHRASE }}" \
+          --output .env.production .env.production.gpg
+
+      - name: Copy .env.production to .env
+        run: cp .env.production .env
+
+      - name: Load .env file
+        run: |
+          set -a
+          source .env
+          set +a
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Prepare zip artifact
+        run: |
+          zip -r  ${{ env.ZIP_NAME }} . -x ".git/*" ".github/*" "test/*" "node_modules/*" 
+
+      - name: Scp artifact to EC2
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          port: ${{ secrets.EC2_PORT || 22 }}
+          source: ${{ env.ZIP_NAME }}
+          target: ${{ env.REMOTE_PATH }}
+
+      - name: Unzip artifact on EC2
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          port: ${{ secrets.EC2_PORT || 22 }}
+          script: |
+            cd ${{ env.REMOTE_PATH }}
+            unzip -o ${{ env.ZIP_NAME }} && rm -f ${{ env.ZIP_NAME }}
+            
+            corepack enable
+            corepack prepare pnpm@latest --activate
+
+            pnpm install --only production --frozen-lockfile
+            chmod +x apps/docs/start.sh
+            chmod +x apps/web/start.sh
+            pnpm run pm2:start

@@ -1,0 +1,26 @@
+{
+  "name": "@repo/ui",
+  "version": "0.0.0",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./styles.css": "./dist/styles.css",
+    "./*": "./dist/*.js",
+    "./hooks": "./dist/hooks/*.js",
+    "./lib": "./dist/lib/*.js"
+  },
+  "license": "MIT",
+  "scripts": {
+    "build:styles": "tailwindcss -i ./src/styles.css -o ./dist/styles.css",
+    "build:components": "tsc",
+    "dev:styles": "tailwindcss -i ./src/styles.css -o ./dist/styles.css --watch",
+    "dev:components": "tsc --watch"
+  },
+  "peerDependencies": {
+    "react": "^19"
+  }
+}
