@@ -38,21 +38,25 @@ export function UserProvider(props: { children: React.ReactNode }) {
       );
     }
   };
+  const signOut = () => {
+    setUser(null);
+    redirect(`${process.env.NEXT_PUBLIC_ENDPOINT_URL}/api/auth/signOut`);
+  };
 
   const googleSignIn = (redirectUrl?: string) => {
     redirect(
-      `${process.env.NEXT_PUBLIC_API_URL}/auth/google?redirect=${encodeURIComponent(redirectUrl || '')}`,
+      `${process.env.NEXT_PUBLIC_ENDPOINT_URL}/api/auth/google?redirect=${encodeURIComponent(redirectUrl || '')}`,
     );
   };
 
   const githubSignIn = (redirectUrl?: string) => {
     redirect(
-      `${process.env.NEXT_PUBLIC_API_URL}/auth/github?redirect=${encodeURIComponent(redirectUrl || '')}`,
+      `${process.env.NEXT_PUBLIC_ENDPOINT_URL}/api/auth/github?redirect=${encodeURIComponent(redirectUrl || '')}`,
     );
   };
   const twitterSignIn = (redirectUrl?: string) => {
     redirect(
-      `${process.env.NEXT_PUBLIC_API_URL}/auth/twitter?redirect=${encodeURIComponent(redirectUrl || '')}`,
+      `${process.env.NEXT_PUBLIC_ENDPOINT_URL}/api/auth/twitter?redirect=${encodeURIComponent(redirectUrl || '')}`,
     );
   };
 
@@ -64,12 +68,6 @@ export function UserProvider(props: { children: React.ReactNode }) {
     }
   };
 
-  const signOut = () => {
-    localStorage.removeItem('access_token');
-    setUser(null);
-    redirect('/auth/signin');
-  };
-
   const deleteAccount = async () => {
     if (!user) {
       console.error('No user to delete');
@@ -77,7 +75,6 @@ export function UserProvider(props: { children: React.ReactNode }) {
     }
     try {
       await api.user.deleteAccount();
-      localStorage.removeItem('access_token');
       setUser(null);
       redirect('/auth/signin');
     } catch (error) {

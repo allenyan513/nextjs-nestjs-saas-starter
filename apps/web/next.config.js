@@ -1,5 +1,7 @@
 const nextConfig = {
+  reactStrictMode: true,
   transpilePackages: ['@repo/ui'],
+  output: 'standalone',
   images: {
     domains: ['localhost'],
     remotePatterns: [
@@ -10,4 +12,12 @@ const nextConfig = {
     ],
   }
 };
+// module.exports = {
+//   reactStrictMode: true,
+//   transpilePackages: ["@repo/ui"],
+//   output: "standalone",
+//   experimental: {
+//     outputFileTracingRoot: path.join(__dirname, "../../"),
+//   },
+// };
 export default nextConfig;

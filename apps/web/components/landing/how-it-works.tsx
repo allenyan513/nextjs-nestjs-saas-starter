@@ -45,7 +45,7 @@ export const HowItWorks: React.FC = () => {
         ))}
       </div>
       <Link
-        href={`${process.env.NEXT_PUBLIC_DOCS_URL}`}
+        href={`${process.env.NEXT_PUBLIC_ENDPOINT_URL}/docs`}
         target={'_blank'}
         className={cn(
           buttonVariants({ size: 'lg' }),

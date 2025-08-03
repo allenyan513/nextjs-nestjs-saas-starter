@@ -50,7 +50,7 @@ export function AppSidebar(props: {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <Link href={`${process.env.NEXT_PUBLIC_WEB_URL}`}>
+              <Link href={`${process.env.NEXT_PUBLIC_ENDPOINT_URL}`}>
                 <Logo />
                 <h1 className="text-base font-semibold">{title}</h1>
               </Link>

@@ -9,6 +9,7 @@ export class UsersService {
   constructor(private prismaService: PrismaService) {}
 
   async getProfile(userId: string): Promise<UserEntity> {
+    this.logger.debug(`Fetching user profile for ID: ${userId}`);
     if (!userId) {
       throw new Error('User ID is required');
     }

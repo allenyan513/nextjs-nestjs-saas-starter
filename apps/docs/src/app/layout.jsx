@@ -40,7 +40,7 @@ export default async function RootLayout({ children }) {
           <b>Reviewsup.io</b>
         </div>
       }
-      logoLink={process.env.NEXT_PUBLIC_WEB_URL || 'https://reviewsup.io'}
+      logoLink={process.env.NEXT_PUBLIC_ENDPOINT_URL || 'https://reviewsup.io'}
       projectLink={'https://github.com/allenyan513/reviewsup.io'}
     />
   )

@@ -95,8 +95,8 @@ export class OrdersService {
     if (!price) {
       throw new BadRequestException('Price not found for product');
     }
-    const success_url = `${process.env.NEXT_PUBLIC_WEB_URL}/checkout/success`;
-    const cancel_url = `${process.env.NEXT_PUBLIC_WEB_URL}/checkout/cancel`;
+    const success_url = `${process.env.NEXT_PUBLIC_ENDPOINT_URL}/checkout/success`;
+    const cancel_url = `${process.env.NEXT_PUBLIC_ENDPOINT_URL}/checkout/cancel`;
     const session = await this.stripe.checkout.sessions.create({
       line_items: [
         {

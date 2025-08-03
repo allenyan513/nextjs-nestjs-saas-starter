@@ -3,15 +3,15 @@ import {
   CreateOneTimePaymentDto,
   CreateOneTimePaymentResponse,
   OrderEntity,
-} from '@repo/shared';
+} from '../types';
 
 export const order = {
-  findAllProducts: () => authFetch(`/orders/products`, 'GET', {}),
+  findAllProducts: () => authFetch(`/api/orders/products`, 'GET', {}),
   createOne: (
     dto: CreateOneTimePaymentDto,
   ): Promise<CreateOneTimePaymentResponse> =>
-    authFetch('/orders/create', 'POST', dto),
-  findAll: (): Promise<OrderEntity[]> => authFetch('/orders', 'GET', {}),
-  findOne: (id: string) => authFetch(`/orders/${id}`, 'GET', {}),
-  deleteOne: (id: string) => authFetch(`/orders/${id}`, 'DELETE', {}),
+    authFetch('/api/orders/create', 'POST', dto),
+  findAll: (): Promise<OrderEntity[]> => authFetch('/api/orders', 'GET', {}),
+  findOne: (id: string) => authFetch(`/api/orders/${id}`, 'GET', {}),
+  deleteOne: (id: string) => authFetch(`/api/orders/${id}`, 'DELETE', {}),
 };

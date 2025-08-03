@@ -67,7 +67,7 @@ export class AuthService {
     }
     const token = this.generateJwt(jwtPayload);
     const encodedRedirect = encodeURIComponent(redirect);
-    const magicLink = `${process.env.NEXT_PUBLIC_API_URL}/auth/magic-login?token=${token}&redirect=${encodedRedirect}`;
+    const magicLink = `${process.env.NEXT_PUBLIC_ENDPOINT_URL}/api/auth/magic-login?token=${token}&redirect=${encodedRedirect}`;
     const html = await render(
       React.createElement(EmailSigninEmail, {
         url: magicLink,

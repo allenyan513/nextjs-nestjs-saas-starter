@@ -74,8 +74,7 @@ export function LoginForm(props: { redirect?: string; className?: string }) {
         <Button
           onClick={handleSubmit}
           type="submit"
-          className="w-full"
-          disabled={!submitForm.email || loadingSendEmail}
+          className='bg-primary text-primary-foreground hover:bg-primary/90'
         >
           Continue with Email
         </Button>

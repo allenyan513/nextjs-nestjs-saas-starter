@@ -1,2 +1,2 @@
 #!/bin/bash
-next start -p 5510
+next start -p 3001

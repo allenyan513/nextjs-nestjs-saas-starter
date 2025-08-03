@@ -32,11 +32,17 @@ export class AuthController {
   @Get('callback/google')
   async googleAuthCallback(@Req() req, @Res() res: Response) {
     const token = this.authService.generateJwt(req.user);
+    res.cookie('access_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
     const redirectParam = req.query.state as string;
-    let redirectUrl = `${process.env.NEXT_PUBLIC_WEB_URL}/auth/callback?access_token=${token}`;
-    if (redirectParam) {
-      redirectUrl = `${redirectUrl}&redirect=${encodeURIComponent(redirectParam)}`;
-    }
+    const redirectUrl = redirectParam
+      ? `${process.env.NEXT_PUBLIC_ENDPOINT_URL}/${redirectParam}`
+      : `${process.env.NEXT_PUBLIC_ENDPOINT_URL}/`;
     return res.redirect(redirectUrl);
   }
 
@@ -48,11 +54,18 @@ export class AuthController {
   @Get('callback/github')
   async githubAuthCallback(@Req() req, @Res() res: Response) {
     const token = this.authService.generateJwt(req.user);
+    res.cookie('access_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
     const redirectParam = req.query.state as string;
-    let redirectUrl = `${process.env.NEXT_PUBLIC_WEB_URL}/auth/callback?access_token=${token}`;
-    if (redirectParam) {
-      redirectUrl = `${redirectUrl}&redirect=${encodeURIComponent(redirectParam)}`;
-    }
+    const redirectUrl = redirectParam
+      ? `${process.env.NEXT_PUBLIC_ENDPOINT_URL}/${redirectParam}`
+      : `${process.env.NEXT_PUBLIC_ENDPOINT_URL}/`;
+
     return res.redirect(redirectUrl);
   }
 
@@ -68,11 +81,17 @@ export class AuthController {
   @Get('magic-login')
   async loginWithMagic(@Req() req, @Res() res: Response) {
     const token = this.authService.generateJwt(req.user);
+    res.cookie('access_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
     const encodedRedirect = req.query.redirect as string;
-    let redirectUrl = `${process.env.NEXT_PUBLIC_WEB_URL}/auth/callback?access_token=${token}`;
-    if (encodedRedirect) {
-      redirectUrl = `${redirectUrl}&redirect=${encodedRedirect}`;
-    }
+    const redirectUrl = encodedRedirect
+      ? `${process.env.NEXT_PUBLIC_ENDPOINT_URL}/${encodedRedirect}`
+      : `${process.env.NEXT_PUBLIC_ENDPOINT_URL}/`;
+
     return res.redirect(redirectUrl);
   }
 
@@ -81,4 +100,17 @@ export class AuthController {
   async getSession(@Jwt() jwt: JwtPayload) {
     return jwt;
   }
+
+
+  @Get('signOut')
+  signOut(@Req() req, @Res() res: Response) {
+    res.clearCookie('access_token');
+    const encodedRedirect = req.query.redirect as string;
+    const redirectUrl = encodedRedirect
+      ? `${process.env.NEXT_PUBLIC_ENDPOINT_URL}/${encodedRedirect}`
+      : `${process.env.NEXT_PUBLIC_ENDPOINT_URL}/`;
+
+    return res.redirect(redirectUrl);
+  }
+
 }

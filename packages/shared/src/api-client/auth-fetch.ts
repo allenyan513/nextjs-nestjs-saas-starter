@@ -10,17 +10,14 @@ export async function authFetch(
   method: 'GET' | 'POST' | 'DELETE' | 'PATCH',
   data: Record<string, any> = {},
 ) {
-  const access_token =
-    typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
-    Authorization: access_token ? `Bearer ${access_token}` : '',
   };
   const config: RequestInit = {
     method,
     headers,
   };
-  let url = `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`;
+  let url = `${process.env.NEXT_PUBLIC_ENDPOINT_URL}${endpoint}`;
   if (method === 'GET' || method === 'DELETE') {
     const queryString = new URLSearchParams(data).toString();
     if (queryString) {
