@@ -8,10 +8,19 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   private logger = new Logger('GoogleStrategy');
 
   constructor(private authService: AuthService) {
+    const clientID = process.env.GOOGLE_CLIENT_ID;
+    const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+    const callbackURL = process.env.GOOGLE_CALLBACK_URL;
+    if (!clientID || !clientSecret || !callbackURL) {
+      const logger = new Logger('GoogleStrategy');
+      logger.warn(
+        'Google OAuth environment variables are not set. Google login will not work properly.',
+      );
+    }
     super({
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: process.env.GOOGLE_CALLBACK_URL,
+      clientID: clientID || 'placeholder',
+      clientSecret: clientSecret || 'placeholder',
+      callbackURL: callbackURL || 'http://localhost/placeholder',
       scope: ['email', 'profile'],
     });
   }

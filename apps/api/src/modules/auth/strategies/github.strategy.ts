@@ -8,10 +8,19 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
   private logger = new Logger('GithubStrategy');
 
   constructor(private authService: AuthService) {
+    const clientID = process.env.GITHUBS_CLIENT_ID;
+    const clientSecret = process.env.GITHUBS_CLIENT_SECRET;
+    const callbackURL = process.env.GITHUBS_CALLBACK_URL;
+    if (!clientID || !clientSecret || !callbackURL) {
+      const logger = new Logger('GithubStrategy');
+      logger.warn(
+        'Github OAuth environment variables are not set. Github login will not work properly.',
+      );
+    }
     super({
-      clientID: process.env.GITHUBS_CLIENT_ID,
-      clientSecret: process.env.GITHUBS_CLIENT_SECRET,
-      callbackURL: process.env.GITHUBS_CALLBACK_URL,
+      clientID: clientID || 'placeholder',
+      clientSecret: clientSecret || 'placeholder',
+      callbackURL: callbackURL || 'http://localhost/placeholder',
       scope: ['user:email', 'read:user'],
     });
   }

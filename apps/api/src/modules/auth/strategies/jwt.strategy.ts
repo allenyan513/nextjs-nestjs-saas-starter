@@ -10,6 +10,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   private logger = new Logger('JwtStrategy');
 
   constructor(private prismaService: PrismaService) {
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      throw new Error('JWT_SECRET is not defined');
+    }
     const extractJwtFromCookieOrBearerToken = (req) => {
       let cookieToken = null;
       if (req && req.headers && req.headers.cookie) {
@@ -22,7 +26,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: extractJwtFromCookieOrBearerToken,
       ignoreExpiration: false,
-      secretOrKey: `${process.env.JWT_SECRET}`,
+      secretOrKey: jwtSecret,
     });
   }
 

@@ -22,16 +22,20 @@ import Stripe from 'stripe';
 @Injectable()
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
-  private stripe: Stripe;
+  private stripe: Stripe | null = null;
 
   constructor(
     private prismaService: PrismaService,
     private emailService: EmailService,
     private userService: UsersService,
   ) {
-    this.stripe = new Stripe(`${process.env.STRIPE_KEY}`, {
-      apiVersion: '2025-06-30.basil',
-    });
+    if (!process.env.STRIPE_KEY) {
+      this.logger.warn('STRIPE_KEY is not set in environment variables');
+    } else {
+      this.stripe = new Stripe(`${process.env.STRIPE_KEY}`, {
+        apiVersion: '2025-06-30.basil',
+      });
+    }
   }
 
   async getProducts(uid: string): Promise<Stripe.Product[]> {
@@ -91,6 +95,8 @@ export class OrdersService {
     if (!price) {
       throw new BadRequestException('Price not found for product');
     }
+    const success_url = `${process.env.NEXT_PUBLIC_WEB_URL}/checkout/success`;
+    const cancel_url = `${process.env.NEXT_PUBLIC_WEB_URL}/checkout/cancel`;
     const session = await this.stripe.checkout.sessions.create({
       line_items: [
         {
@@ -99,8 +105,8 @@ export class OrdersService {
         },
       ],
       mode: 'payment',
-      success_url: `${process.env.STRIPE_CHECKOUT_SUCCESS_URL}`,
-      cancel_url: `${process.env.STRIPE_CHECKOUT_CANCEL_URL}`,
+      success_url: success_url,
+      cancel_url: cancel_url,
       customer: customerId,
     });
     if (!session || !session.id) {

@@ -8,11 +8,20 @@ export class TwitterStrategy extends PassportStrategy(Strategy, 'twitter') {
   private logger = new Logger('TwitterStrategy');
 
   constructor(private authService: AuthService) {
+    const clientID = process.env.TWITTER_CLIENT_ID;
+    const clientSecret = process.env.TWITTER_CLIENT_SECRET;
+    const callbackURL = process.env.TWITTER_CALLBACK_URL;
+    if (!clientID || !clientSecret || !callbackURL) {
+      const logger = new Logger('TwitterStrategy');
+      logger.warn(
+        'Twitter OAuth environment variables are not set. Twitter login will not work properly.',
+      );
+    }
     super({
       clientType: 'confidential',
-      clientID: process.env.TWITTER_CLIENT_ID,
-      clientSecret: process.env.TWITTER_CLIENT_SECRET,
-      callbackURL: process.env.TWITTER_CALLBACK_URL,
+      clientID: clientID || 'placeholder',
+      clientSecret: clientSecret || 'placeholder',
+      callbackURL: callbackURL || 'http://localhost/placeholder',
     });
   }
 
