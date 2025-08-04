@@ -26,16 +26,14 @@ Founders, indie hackers, and teams building modern SaaS apps with speed and flex
 
 ### Development
 
-1. pnpm install
-2. DATABASE_URL
 ```bash
-pnpm cp-env
-cd packages/database
-pnpm db:migrate
-pnpm db:generate
+docker-compose up -d
+pnpm install
+pnpm dev
 ```
-2. JWT_SECRET
-3. RESEND_API_KEY
-
 
 ### Deployment
+
+```bash
+docker-compose -f docker-compose.prod.yml --env-file .env.production up -d
+```

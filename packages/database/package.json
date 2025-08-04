@@ -10,5 +10,11 @@
   },
   "export": {
     ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "latest"
+  },
+  "devDependencies": {
+    "prisma": "latest"
   }
 }

@@ -30,9 +30,8 @@ RUN pnpm install --frozen-lockfile
 
 # 拷贝完整源码（仅包括 api 所依赖部分）
 COPY --from=builder /app/out/full/ .
-COPY --from=builder /app/.env ./apps/api/.env
-COPY --from=builder /app/.env ./apps/web/.env
-COPY --from=builder /app/.env ./packages/database/.env
+#COPY --from=builder /app/apps/api/.env ./apps/api
+#COPY --from=builder /app/packages/database/.env ./packages/database
 
 # 构建 NestJS 应用
 RUN pnpm turbo run build
@@ -41,12 +40,17 @@ RUN pnpm turbo run build
 FROM base AS runner
 WORKDIR /app
 
-# 创建非 root 用户
-RUN addgroup --system --gid 1001 expressjs && \
-    adduser --system --uid 1001 expressjs
-USER expressjs
+# Copy only the necessary production assets from the installer stage
+COPY --from=installer /app/pnpm-lock.yaml .
+COPY --from=installer /app/package.json .
+COPY --from=installer /app/pnpm-workspace.yaml .
+COPY --from=installer /app/turbo.json .
+COPY --from=installer /app/packages ./packages
+COPY --from=installer /app/apps/api/package.json ./apps/api/
+COPY --from=installer /app/apps/api/dist ./apps/api/dist
+#COPY --from=installer /app/apps/api/.env ./apps/api/
 
-# 拷贝构建后的文件
-COPY --from=installer /app .
+RUN pnpm install --frozen-lockfile --prod
 
-CMD pnpm turbo run db:migrate:deploy && node apps/api/dist/main.js
+#CMD pnpm turbo run db:migrate:deploy && node apps/api/dist/main.js
+CMD node apps/api/dist/main.js

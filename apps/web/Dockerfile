@@ -12,11 +12,7 @@ ENV PNPM_HOME="/root/.local/share/pnpm"
 ENV PATH="${PNPM_HOME}:${PATH}"
 # Replace <your-major-version> with the major version installed in your repository. For example:
 RUN pnpm add -g turbo@^2.5.4
-
 COPY . .
-
-# Generate a partial monorepo with a pruned lockfile for a target workspace.
-# Assuming "web" is the name entered in the project's package.json: { name: "web" }
 RUN turbo prune web --docker
 
 # Add lockfile and package.json's of isolated subworkspace
@@ -25,15 +21,22 @@ RUN apk update
 RUN apk add --no-cache libc6-compat
 RUN corepack enable && corepack prepare pnpm@latest --activate
 WORKDIR /app
-
 # First install the dependencies (as they change less often)
 COPY --from=builder /app/out/json/ .
 RUN pnpm install --frozen-lockfile
-
 # Build the project
 COPY --from=builder /app/out/full/ .
-COPY --from=builder /app/.env ./apps/web/.env
-COPY --from=builder /app/.env ./packages/database/.env
+#COPY --from=builder /app/apps/web/.env ./apps/web/
+#COPY --from=builder /app/packages/database/.env ./packages/database/
+ARG NEXT_PUBLIC_ENDPOINT_URL
+ARG NEXT_PUBLIC_GOOGLE_ANALYTICS_ID
+ARG NEXT_PUBLIC_AWS_REGION
+ARG NEXT_PUBLIC_AWS_S3_BUCKET_NAME
+
+ENV NEXT_PUBLIC_ENDPOINT_URL=$NEXT_PUBLIC_ENDPOINT_URL
+ENV NEXT_PUBLIC_GOOGLE_ANALYTICS_ID=$NEXT_PUBLIC_GOOGLE_ANALYTICS_ID
+ENV NEXT_PUBLIC_AWS_REGION=$NEXT_PUBLIC_AWS_REGION
+ENV NEXT_PUBLIC_AWS_S3_BUCKET_NAME=$NEXT_PUBLIC_AWS_S3_BUCKET_NAME
 
 RUN pnpm turbo run build
 
