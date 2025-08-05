@@ -29,6 +29,12 @@ enum PaymentStatus {
   no_payment_required
 }
 
+enum ProductStatus {
+  reviewing
+  rejected
+  approved
+}
+
 model User {
   id               String           @id @default(uuid())
   email            String           @unique
@@ -50,6 +56,7 @@ model User {
   updatedAt        DateTime         @updatedAt
   accounts         Account[]
   orders           Order[]
+  Product          Product[]
 }
 
 model Account {
@@ -91,4 +98,52 @@ model PaymentEvent {
   evnetId   String @unique
   eventType String
   data      Json
+}
+
+model Product {
+  id                 String            @id @default(uuid())
+  locale             String            @default("en")
+  userId             String
+  name               String
+  slug               String
+  url                String            @default("")
+  status             ProductStatus     @default(reviewing)
+  icon               String            @default("")
+  screenshots        String[]          @default([])
+  tagline            String            @default("")
+  description        String            @default("")
+  featured           Boolean           @default(false)
+  productCategoryIds String[]          @default([])
+  longDescription    String?
+  features           String?
+  useCase            String?
+  howToUse           String?
+  faq                String?
+  redditUrl          String?
+  twitterUrl         String?
+  facebookUrl        String?
+  instagramUrl       String?
+  youtubeUrl         String?
+  tiktokUrl          String?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  user               User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productCategories  ProductCategory[] @relation("ProductCategories")
+}
+
+model ProductCategory {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  slug        String   @unique
+  group       String
+  whoToUse    String?
+  howItWork   String?
+  advantages  String?
+  description String?
+  faqs        String?
+  features    String?
+  icon        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  products Product[] @relation("ProductCategories")
 }
